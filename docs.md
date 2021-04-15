@@ -84,6 +84,8 @@
 | `position`    | `number`                                                                              |         |      |
 | `maxWidth`    | `bool`                                                                                |         |      |
 | `minWidth`    | `string`                                                                              |         |      |
+| `strokeColor` | `number`                                                                              | white   |      |
+| `strokeWidth` | `number`                                                                              |   0     |      |
 | `zeroLine`    | `{`<br />`enabled: bool,`<br />`lineWidth: number,`<br />`lineColor: number`<br />`}` |         |      |
 
 ## Chart Base (All charts have these props)
@@ -96,7 +98,6 @@
 | `chartBackgroundColor`         | `number`                                                                                                                                        |         |                                                                                                                                                                                                                                                             |
 | `logEnabled`                   | `bool`                                                                                                                                          |         |                                                                                                                                                                                                                                                             |
 | `noDataText`                   | `string`                                                                                                                                        |         |                                                                                                                                                                                                                                                             |
-| `noDataTextColor`              | `number`                                                                                                                                        |         |                                                                                                                                                                                                                                                             |
 | `touchEnabled`                 | `bool`                                                                                                                                          |         |                                                                                                                                                                                                                                                             |
 | `dragDecelerationEnabled`      | `bool`                                                                                                                                          |         |                                                                                                                                                                                                                                                             |
 | `dragDecelerationFrictionCoef` | `function`                                                                                                                                      |         |                                                                                                                                                                                                                                                             |
@@ -162,10 +163,9 @@
 
 #### _BarLineChartBase props plus props listed below_.
 
-| Prop        | Type                                                 | Default | Note |
-| ------      | ---------------------------------------------------- | ------- | ---- |
-| `data`      | `DataTypes.combinedData`                             |         |      |
-| `drawOrder` | `array with one of: ['SCATTER', 'BAR', 'LINE']`      |         |      |
+| Prop   | Type                     | Default | Note |
+| ------ | ------------------------ | ------- | ---- |
+| `data` | `DataTypes.combinedData` |         |      |
 
 ## HorizontalBarChart
 
@@ -207,23 +207,21 @@
 
 #### _PieRadarChartBase props plus props listed below_.
 
-| Prop                      | Type                                                                                                   | Default | Note |
-| ------------------------- | ------------------------------------------------------------------------------------------------------ | ------- | ---- |
-| `extraOffsets`            | `{`<br />`left: number,`<br />`top: number,`<br />`right: number,`<br />`bottom: number,`<br />`}`     |         |      |
-| `drawEntryLabels`         | `bool`                                                                                                 |         |      |
-| `usePercentValues`        | `bool`                                                                                                 |         |      |
-| `centerText`              | `string`                                                                                               |         |      |
-| `styledCenterText`        | `{`<br />`text: string,`<br />`color: number,`<br />`fontFamily: string,`<br />`size: number`<br />`}` |         |      |
-| `centerTextRadiusPercent` | `number`                                                                                               |         |      |
-| `holeRadius`              | `number`                                                                                               |         |      |
-| `holeColor`               | `number`                                                                                               |         |      |
-| `transparentCircleRadius` | `number`                                                                                               |         |      |
-| `transparentCircleColor`  | `number`                                                                                               |         |      |
-| `entryLabelColor`         | `number`                                                                                               |         |      |
-| `entryLabelTextSize`      | `number`                                                                                               |         |      |
-| `entryLabelFontFamily`    | `string`                                                                                               |         |      |
-| `maxAngle`                | `number`                                                                                               |         |      |
-| `data`                    | `DataTypes.pieData`                                                                                    |         |      |
+| Prop                      | Type                                                                        | Default | Note |
+| ------------------------- | --------------------------------------------------------------------------- | ------- | ---- |
+| `drawEntryLabels`         | `bool`                                                                      |         |      |
+| `usePercentValues`        | `bool`                                                                      |         |      |
+| `centerText`              | `string`                                                                    |         |      |
+| `styledCenterText`        | `{`<br />`text: string,`<br />`color: number,`<br />`size: number`<br />`}` |         |      |
+| `centerTextRadiusPercent` | `number`                                                                    |         |      |
+| `holeRadius`              | `number`                                                                    |         |      |
+| `holeColor`               | `number`                                                                    |         |      |
+| `transparentCircleRadius` | `number`                                                                    |         |      |
+| `transparentCircleColor`  | `number`                                                                    |         |      |
+| `entryLabelColor`         | `number`                                                                    |         |      |
+| `entryLabelTextSize`      | `number`                                                                    |         |      |
+| `maxAngle`                | `number`                                                                    |         |      |
+| `data`                    | `DataTypes.pieData`                                                         |         |      |
 
 ## RadarChart
 
@@ -264,7 +262,10 @@ type barLineScatterCandleBubble { highlightColor: number }
 type lineScatterCandleRadar {
   drawVerticalHighlightIndicator: bool,
   drawHorizontalHighlightIndicator: bool,
-  highlightLineWidth: number
+  highlightLineWidth: number,
+  // Note: only first lineLength and spaceLength will be used on android
+  highlightLineDashLengths: Array // [lineLength, spaceLength, ...]
+
 }
 ```
 

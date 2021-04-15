@@ -28,6 +28,8 @@ React Native Charts Wrapper is built on MPAndroidChart(v3.1.0) & Charts(v3.3.0),
 
 ## Setup
 
+Autolinking is supported for `react-native` versions 60+. Please see guide below for lower versions.
+
 A step by step tutorial to set up a new project can be found [here](https://github.com/wuxudong/react-native-charts-wrapper/blob/master/installation_guide/README.md)
 
 
@@ -95,28 +97,13 @@ index will used as x.
 check Example->TimeSeriesLineChart for details
 
 
-## Supported Callbacks
+## Callback
 
-**onSelect**
+**Support value selection callBack: onSelect**
 
-Triggered when a chart value is selected. The event passed back will include the coordinates of the touch as well as the data (including marker label) selected.
+you can do whatever you want, even pop your own modal, or jump to another page.
 
-**onChange**
-
-Triggered for various supported events on each platform. Due to the different nature of gesture handling on each platform as well as the different implementations of the underlying chart libraries, the same events are not supported on every platform. For full details on the supported events, see the table below:
-
-| Event Name | Description | iOS | Android |
-| --------------- | -------- | ------- | ---- |
-| `chartScaled`       | When a chart is scaled/zoomed via a pinch zoom gesture. | ✅ | ✅ |
-| `chartTranslated`   | When a chart is moved/translated via a drag gesture. | ✅ | ✅ |
-| `chartPanEnd`       | When a chart pan gesture ends. | ✅ | ❌ |
-| `chartGestureStart` | When a chart gesture starts. | ❌ | ✅ |
-| `chartGestureEnd`   | When a chart gesture ends. | ❌ | ✅ |
-| `chartLongPress`    | When a chart is long pressed. | ❌ | ✅ |
-| `chartSingleTap`    | When a chart is single tapped. | ❌ | ✅ |
-| `chartFling`        | When a chart recieves a fling gesture. | ❌ | ✅ |
-| `doubleTapped`      | When a chart is double tapped | ❌ | ✅ |
-
+**Support gesture callBack: onChange**
 
 check Example->MultipleChart for details.
 

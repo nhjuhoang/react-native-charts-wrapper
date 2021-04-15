@@ -14,6 +14,8 @@ RCT_EXPORT_VIEW_PROPERTY(drawOrder, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(drawValueAboveBar, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(drawBarShadow, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(highlightFullBarEnabled, BOOL)
+RCT_EXTERN_METHOD(appendN:(nonnull NSNumber *)node data:(nonnull NSDictionary *)data)
+RCT_EXTERN_METHOD(updateFirstN:(nonnull NSNumber *)node data:(nonnull NSDictionary *)data)
 
 
 @end

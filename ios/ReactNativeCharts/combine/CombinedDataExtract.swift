@@ -15,7 +15,7 @@ class CombinedDataExtract : DataExtract {
     let bubbleDataExtract = BubbleDataExtract()
 
     override func extract(_ data: JSON) -> ChartData?  {
-        let chartData = CombinedChartData();
+        let chartData = CustomCombinedChartData();
 
 
         if data["lineData"] != JSON.null {

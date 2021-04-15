@@ -15,15 +15,15 @@ import java.util.ArrayList;
  * Created by xudong on 02/03/2017.
  */
 public class CombinedDataExtract extends DataExtract<CombinedData, Entry> {
-    private LineDataExtract lineDataExtract = new LineDataExtract();
-    private BarDataExtract barDataExtract = new BarDataExtract();
-    private ScatterDataExtract scatterDataExtract = new ScatterDataExtract();
-    private CandleDataExtract candleDataExtract = new CandleDataExtract();
-    private BubbleDataExtract bubbleDataExtract = new BubbleDataExtract();
+    public LineDataExtract lineDataExtract = new LineDataExtract();
+    public BarDataExtract barDataExtract = new BarDataExtract();
+    public ScatterDataExtract scatterDataExtract = new ScatterDataExtract();
+    public CandleDataExtract candleDataExtract = new CandleDataExtract();
+    public BubbleDataExtract bubbleDataExtract = new BubbleDataExtract();
 
     @Override
     public CombinedData extract(Chart chart, ReadableMap propMap) {
-        CombinedData chartData = new CombinedData();
+        CustomCombinedData chartData = new CustomCombinedData();
 
         if (BridgeUtils.validate(propMap, ReadableType.Map, "lineData")) {
             chartData.setData(lineDataExtract.extract(chart, propMap.getMap("lineData")));

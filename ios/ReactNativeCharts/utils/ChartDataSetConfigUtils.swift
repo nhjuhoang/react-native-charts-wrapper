@@ -90,6 +90,10 @@ class ChartDataSetConfigUtils: NSObject {
         if config["highlightColor"].int != nil {
             dataSet.highlightColor = RCTConvert.uiColor(config["highlightColor"].intValue);
         }
+
+        if config["highlightLineDashLengths"].array != nil {
+            dataSet.highlightLineDashLengths = config["highlightLineDashLengths"].array!.map { CGFloat($0.float!) }
+        }
     }
 
 
@@ -123,9 +127,7 @@ class ChartDataSetConfigUtils: NSObject {
                 angle = fillGradient["angle"]!.doubleValue
             }
 
-            if (gradient != nil) {
-              dataSet.fill = Fill.fillWithLinearGradient(gradient!, angle: CGFloat(angle));
-            }
+            dataSet.fill = Fill.fillWithLinearGradient(gradient!, angle: CGFloat(angle))
         } else if config["fillColor"].int != nil {
             dataSet.fillColor = RCTConvert.uiColor(config["fillColor"].intValue);
         }

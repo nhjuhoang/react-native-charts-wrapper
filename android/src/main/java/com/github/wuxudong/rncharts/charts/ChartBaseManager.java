@@ -7,6 +7,7 @@ import android.view.View;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.github.mikephil.charting.animation.Easing;
@@ -17,7 +18,6 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.Legend.LegendForm;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.LimitLine;
-import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.data.Entry;
@@ -26,6 +26,7 @@ import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.wuxudong.rncharts.data.DataExtract;
+import com.github.wuxudong.rncharts.markers.RNBubbleMarkerView;
 import com.github.wuxudong.rncharts.markers.RNRectangleMarkerView;
 import com.github.wuxudong.rncharts.markers.RNCircleMarkerView;
 import com.github.wuxudong.rncharts.utils.BridgeUtils;
@@ -35,6 +36,7 @@ import com.github.wuxudong.rncharts.utils.TypefaceUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends SimpleViewManager<T> {
@@ -48,8 +50,23 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
     protected static final int HIGHLIGHTS = 8;
 
     protected static final int SET_DATA_AND_LOCK_INDEX = 9;
+    protected static final int UPDATE_DATA_INDEX = 10;
+    protected static final int APPEND_N = 11;
+    protected static final int UPDATE_FIRST_N = 12;
+
+    protected float mOriginalXAxisMaximum = Float.NaN;
 
     abstract DataExtract getDataExtract();
+
+    public Map getExportedCustomBubblingEventTypeConstants() {
+        return MapBuilder.builder()
+                .put(
+                        "onGestureEnd",
+                        MapBuilder.of(
+                                "phasedRegistrationNames",
+                                MapBuilder.of("bubbled", "onGestureEnd")))
+                .build();
+    }
 
     /**
      * More details about legend customization: https://github.com/PhilJay/MPAndroidChart/wiki/Legend
@@ -192,11 +209,6 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
         chart.setNoDataText(noDataText);
     }
 
-    @ReactProp(name = "noDataTextColor")
-    public void setNoDataTextColor(Chart chart, Integer color) {
-        chart.setNoDataTextColor(color);
-    }
-
     @ReactProp(name = "touchEnabled")
     public void setTouchEnabled(Chart chart, boolean enabled) {
         chart.setTouchEnabled(enabled);
@@ -229,10 +241,10 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
             durationY = propMap.getInt("durationY");
         }
         if (BridgeUtils.validate(propMap, ReadableType.String, "easingX")) {
-             easingX = EasingFunctionHelper.getEasingFunction(propMap.getString("easingX"));
+            easingX = EasingFunctionHelper.getEasingFunction(propMap.getString("easingX"));
         }
         if (BridgeUtils.validate(propMap, ReadableType.String, "easingY")) {
-             easingY = EasingFunctionHelper.getEasingFunction(propMap.getString("easingY"));
+            easingY = EasingFunctionHelper.getEasingFunction(propMap.getString("easingY"));
         }
 
         if (durationX != null && durationY != null) {
@@ -263,6 +275,10 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
             axis.setPosition(XAxisPosition.valueOf(propMap.getString("position")));
         }
 
+        if (BridgeUtils.validate(propMap, ReadableType.Number, "axisMaximum")) {
+            mOriginalXAxisMaximum = (float) propMap.getDouble("axisMaximum");
+        }
+
     }
 
     @ReactProp(name = "marker")
@@ -273,32 +289,39 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
         }
 
         String markerType = propMap.hasKey("markerType") ? propMap.getString("markerType") : "";
-
-        MarkerView markerView = null;
-        switch(markerType) {
+        switch (markerType) {
             case "circle":
-                markerView = circleMarker(chart);
-
+                setCircleMarker(chart);
+                break;
+            case "bubble":
+                setBubbleMarker(chart, propMap);
                 break;
             default:
-                markerView = rectangleMarker(chart, propMap);
+                setRectangleMarker(chart, propMap);
         }
-
-        markerView.setChartView(chart);
-        chart.setMarker(markerView);
     }
 
-    private RNRectangleMarkerView rectangleMarker(Chart chart, ReadableMap propMap) {
+    private void setBubbleMarker(Chart chart, ReadableMap propMap) {
+        RNBubbleMarkerView marker = new RNBubbleMarkerView(chart.getContext(), propMap.getInt("markerColor"), propMap.getInt("textColor"), propMap.getInt("textSize"));
+        chart.setMarker(marker);
+        marker.setChartView(chart);
+        chart.setMarker(marker);
+    }
+
+    private void setRectangleMarker(Chart chart, ReadableMap propMap) {
         RNRectangleMarkerView marker = new RNRectangleMarkerView(chart.getContext());
-        setMarkerParams(marker, propMap);
-        return marker;
+        setMarkerParams(chart, marker, propMap);
+        marker.setChartView(chart);
+        chart.setMarker(marker);
     }
 
-    private RNCircleMarkerView circleMarker(Chart chart) {
-        return new RNCircleMarkerView(chart.getContext());
+    private void setCircleMarker(Chart chart) {
+        RNCircleMarkerView marker = new RNCircleMarkerView(chart.getContext());
+        marker.setChartView(chart);
+        chart.setMarker(marker);
     }
 
-    private void setMarkerParams(RNRectangleMarkerView marker, ReadableMap propMap) {
+    private void setMarkerParams(Chart chart, RNRectangleMarkerView marker, ReadableMap propMap) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                 BridgeUtils.validate(propMap, ReadableType.Number, "markerColor")) {
             marker.getTvContent()
@@ -332,10 +355,10 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
                     alignment = View.TEXT_ALIGNMENT_TEXT_END;
                     break;
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                marker.getTvContent().setTextAlignment(alignment);
-            }
+            marker.getTvContent().setTextAlignment(alignment);
         }
+
+        chart.setMarker(marker);
     }
 
     /**
@@ -367,7 +390,7 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
             axis.setTypeface(TypefaceUtils.getTypeface(chart, propMap));
         }
         if (BridgeUtils.validate(propMap, ReadableType.Number, "yOffset")) {
-            axis.setYOffset((float)(propMap.getDouble("yOffset")));
+            axis.setYOffset((float) (propMap.getDouble("yOffset")));
         }
         if (BridgeUtils.validate(propMap, ReadableType.Number, "gridColor")) {
             axis.setGridColor(propMap.getInt("gridColor"));
@@ -496,12 +519,18 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
                 Locale locale = Locale.getDefault();
 
                 if (BridgeUtils.validate(propMap, ReadableType.String, "locale")) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        locale = Locale.forLanguageTag(propMap.getString("locale"));
-                    }
+                    locale = Locale.forLanguageTag(propMap.getString("locale"));
                 }
 
                 axis.setValueFormatter(new DateFormatter(valueFormatterPattern, since, timeUnit, locale));
+            } else if ("dynamicDate".equals(valueFormatter)) {
+                Locale locale = Locale.getDefault();
+
+                if (BridgeUtils.validate(propMap, ReadableType.String, "locale")) {
+                    locale = Locale.forLanguageTag(propMap.getString("locale"));
+                }
+
+                axis.setValueFormatter(new DynamicChartDateFormatter(locale, chart));
             } else {
                 axis.setValueFormatter(new CustomFormatter(valueFormatter));
             }
@@ -515,13 +544,17 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
     }
 
 
-
     /**
      * Dataset config details: https://github.com/PhilJay/MPAndroidChart/wiki/DataSet-classes-in-detail
      */
     @ReactProp(name = "data")
     public void setData(T chart, ReadableMap propMap) {
         chart.setData(getDataExtract().extract(chart, propMap));
+    }
+
+    @ReactProp(name = "hapticsEnabled")
+    public void setHapticsEnabled(Chart chart, boolean enabled) {
+        chart.setHapticFeedbackEnabled(enabled);
     }
 
     @ReactProp(name = "highlights")
@@ -568,7 +601,8 @@ public abstract class ChartBaseManager<T extends Chart, U extends Entry> extends
         super.onAfterUpdateTransaction(chart);
         chart.notifyDataSetChanged();
         onAfterDataSetChanged(chart);
-        chart.postInvalidate();;
+        chart.postInvalidate();
+        ;
     }
 
 }

@@ -60,6 +60,13 @@ extension RNBarLineChartBaseManager {
     }
   }
 
+	func _updateData(_ reactTag: NSNumber, data: NSDictionary) {
+    _bridge?.uiManager.addUIBlock { (uiManager: RCTUIManager?, viewRegistry:[NSNumber : UIView]?) in
+      let view: RNBarLineChartViewBase = viewRegistry![reactTag] as! RNBarLineChartViewBase;
+			view.updateData(data);
+    }
+  }
+
   func _setDataAndLockIndex(_ reactTag: NSNumber, data: NSDictionary) {
     _bridge?.uiManager.addUIBlock { (uiManager: RCTUIManager?, viewRegistry:[NSNumber : UIView]?) in
       let view: RNBarLineChartViewBase = viewRegistry![reactTag] as! RNBarLineChartViewBase;

@@ -9,18 +9,22 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.jobs.ZoomJob;
 import com.github.mikephil.charting.listener.BarLineChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
+import com.github.mikephil.charting.renderer.YAxisRenderer;
 import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Transformer;
+import com.github.wuxudong.rncharts.listener.RNBarLineChartTouchListener;
 import com.github.wuxudong.rncharts.listener.RNOnChartGestureListener;
 import com.github.wuxudong.rncharts.utils.BridgeUtils;
 
 import java.lang.reflect.Field;
+import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -58,11 +62,15 @@ public abstract class BarLineChartBaseManager<T extends BarLineChartBase, U exte
 
         if (BridgeUtils.validate(propMap, ReadableType.Map, "left")) {
             YAxis leftYAxis = barLineChart.getAxisLeft();
+            YAxisRenderer leftYAxisRenderer = new CustomYAxisRenderer(barLineChart.getViewPortHandler(), leftYAxis, barLineChart.getTransformer(YAxis.AxisDependency.LEFT), propMap.getMap("left"));
+            barLineChart.setRendererLeftYAxis(leftYAxisRenderer);
             setCommonAxisConfig(chart, leftYAxis, propMap.getMap("left"));
             setYAxisConfig(leftYAxis, propMap.getMap("left"));
         }
         if (BridgeUtils.validate(propMap, ReadableType.Map, "right")) {
             YAxis rightYAxis = barLineChart.getAxisRight();
+            YAxisRenderer rightYAxisRenderer = new CustomYAxisRenderer(barLineChart.getViewPortHandler(), rightYAxis, barLineChart.getTransformer(YAxis.AxisDependency.RIGHT), propMap.getMap("right"));
+            barLineChart.setRendererRightYAxis(rightYAxisRenderer);
             setCommonAxisConfig(chart, rightYAxis, propMap.getMap("right"));
             setYAxisConfig(rightYAxis, propMap.getMap("right"));
         }
@@ -167,6 +175,11 @@ public abstract class BarLineChartBaseManager<T extends BarLineChartBase, U exte
     @ReactProp(name = "dragEnabled")
     public void setDragEnabled(BarLineChartBase chart, boolean enabled) {
         chart.setDragEnabled(enabled);
+    }
+
+    @ReactProp(name = "highlightLongPressDragEnabled")
+    public void setHighlightLongPressDragEnabled(BarLineChartBase chart, boolean enabled) {
+        chart.setOnTouchListener(new RNBarLineChartTouchListener(chart, chart.getViewPortHandler().getMatrixTouch(), 3f, enabled));
     }
 
     @ReactProp(name = "highlightPerDragEnabled")
@@ -287,7 +300,8 @@ public abstract class BarLineChartBaseManager<T extends BarLineChartBase, U exte
                 "moveViewToAnimated", MOVE_VIEW_TO_ANIMATED,
                 "fitScreen", FIT_SCREEN,
                 "highlights", HIGHLIGHTS,
-                "setDataAndLockIndex", SET_DATA_AND_LOCK_INDEX);
+                "setDataAndLockIndex", SET_DATA_AND_LOCK_INDEX,
+                "updateData", UPDATE_DATA_INDEX);
 
         if (commandsMap != null) {
             map.putAll(commandsMap);
@@ -328,6 +342,10 @@ public abstract class BarLineChartBaseManager<T extends BarLineChartBase, U exte
 
             case SET_DATA_AND_LOCK_INDEX:
                 setDataAndLockIndex(root, args.getMap(0));
+                return;
+
+            case UPDATE_DATA_INDEX:
+                updateData(root, args.getMap(0));
                 return;
         }
 
@@ -379,6 +397,49 @@ public abstract class BarLineChartBaseManager<T extends BarLineChartBase, U exte
             e.printStackTrace();
         }
 
+    }
+
+    // similar to setDataAndLock index, but doesn't adjust the chart scale
+    private void updateData(T root, ReadableMap map) {
+        YAxis.AxisDependency axisDependency = root.getAxisLeft().isEnabled() ? YAxis.AxisDependency.LEFT : YAxis.AxisDependency.RIGHT;
+        Transformer transformer = root.getTransformer(axisDependency);
+
+        RectF contentRect = root.getViewPortHandler().getContentRect();
+        float originalCenterXPixel = contentRect.centerX();
+        float originalCenterYPixel = contentRect.centerY();
+
+        MPPointD originalCenterValue = root.getValuesByTouchPoint(originalCenterXPixel, originalCenterYPixel, axisDependency);
+
+        root.setData((getDataExtract().extract(root, map)));
+        ReadableMap savedVisibleRange = extraPropertiesHolder.getExtraProperties(root).savedVisibleRange;
+        if (savedVisibleRange != null) {
+            updateVisibleRange(root, savedVisibleRange);
+        }
+
+        if (!Float.isNaN(mOriginalXAxisMaximum)) {
+            root.getXAxis().setAxisMaximum(mOriginalXAxisMaximum);
+        }
+
+        MPPointD newPixelForOriginalCenter = transformer.getPixelForValues((float) originalCenterValue.x, (float) originalCenterValue.y);
+
+        // it only work when no scale involved, otherwise xBias and yBias is not accurate
+        double xBias = newPixelForOriginalCenter.x - originalCenterXPixel;
+        double yBias = newPixelForOriginalCenter.y - originalCenterYPixel;
+
+        ZoomJob.getInstance(root.getViewPortHandler(), 1f, 1f, (float) originalCenterValue.x, (float) originalCenterValue.y, transformer, axisDependency, root).run();
+
+        try {
+            // if there is a dragging action in process, because BarLineChartTouchListener hold an another copy of matrixTouch when touch start, add extra offset to it.
+            // unfortunately, mTouchStartPoint is private
+            Field fieldTouchStartPoint = BarLineChartTouchListener.class.getDeclaredField("mTouchStartPoint");
+            fieldTouchStartPoint.setAccessible(true);
+            MPPointF mTouchStartPoint = (MPPointF) fieldTouchStartPoint.get(root.getOnTouchListener());
+
+            mTouchStartPoint.x += xBias;
+            mTouchStartPoint.y += yBias;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private double getVisibleYRange(T chart, YAxis.AxisDependency axisDependency) {

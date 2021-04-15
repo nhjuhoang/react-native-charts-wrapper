@@ -46,8 +46,26 @@ open class RNCombinedChartManager: RCTViewManager, RNBarLineChartBaseManager {
     (self as RNBarLineChartBaseManager)._highlights(reactTag, config: config)
   }
 
+	func updateData(_ reactTag: NSNumber, data: NSDictionary) {
+		(self as RNBarLineChartBaseManager)._updateData(reactTag, data: data)
+  }
+
   func setDataAndLockIndex(_ reactTag: NSNumber, data: NSDictionary) {
     (self as RNBarLineChartBaseManager)._setDataAndLockIndex(reactTag, data: data)
   }
+
+  func appendN(_ reactTag: NSNumber, data: NSDictionary) {
+  		_bridge?.uiManager.addUIBlock { (uiManager: RCTUIManager?, viewRegistry:[NSNumber : UIView]?) in
+  		  let view: RNCombinedChartView = viewRegistry![reactTag] as! RNCombinedChartView;
+  			view.appendN(data);
+  		}
+    }
+
+    func updateFirstN(_ reactTag: NSNumber, data: NSDictionary) {
+        _bridge?.uiManager.addUIBlock { (uiManager: RCTUIManager?, viewRegistry:[NSNumber : UIView]?) in
+          let view: RNCombinedChartView = viewRegistry![reactTag] as! RNCombinedChartView;
+            view.updateFirstN(data);
+        }
+    }
 
 }

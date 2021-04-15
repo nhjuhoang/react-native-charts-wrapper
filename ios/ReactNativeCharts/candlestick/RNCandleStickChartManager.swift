@@ -46,6 +46,10 @@ open class RNCandleStickChartManager: RCTViewManager, RNBarLineChartBaseManager 
     (self as RNBarLineChartBaseManager)._highlights(reactTag, config: config)
   }
 
+	func updateData(_ reactTag: NSNumber, data: NSDictionary) {
+		(self as RNBarLineChartBaseManager)._updateData(reactTag, data: data)
+   }
+
   func setDataAndLockIndex(_ reactTag: NSNumber, data: NSDictionary) {
     (self as RNBarLineChartBaseManager)._setDataAndLockIndex(reactTag, data: data)
   }
