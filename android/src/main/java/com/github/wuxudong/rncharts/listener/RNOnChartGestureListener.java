@@ -43,21 +43,12 @@ public class RNOnChartGestureListener implements OnChartGestureListener {
 
     @Override
     public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+        sendEvent("chartGestureStart", me);
     }
 
     @Override
     public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-        Chart chart = mWeakChart.get();
-        if (chart != null) {
-            WritableMap event = Arguments.createMap();
-            event.putString("action", String.valueOf(lastPerformedGesture));
-
-            ReactContext reactContext = (ReactContext) chart.getContext();
-            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-                    chart.getId(),
-                    "onGestureEnd",
-                    event);
-        }
+        sendEvent("chartGestureEnd", me);
     }
 
     @Override

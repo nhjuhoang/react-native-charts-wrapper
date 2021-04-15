@@ -521,9 +521,7 @@ open class RNChartViewBase: UIView, ChartViewDelegate {
     	}
 
     @objc public func chartViewDidEndPanning(_ chartView: ChartViewBase) {
-        if (self.onGestureEnd != nil) {
-                self.onGestureEnd!(["action": "DRAG"])
-        }
+        sendEvent("chartPanEnd")
     }
 
     @objc public func chartScaled(_ chartView: ChartViewBase, scaleX: CoreGraphics.CGFloat, scaleY: CoreGraphics.CGFloat) {
