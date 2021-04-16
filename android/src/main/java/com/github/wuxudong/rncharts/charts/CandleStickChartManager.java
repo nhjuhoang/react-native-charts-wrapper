@@ -20,13 +20,6 @@ public class CandleStickChartManager extends BarLineChartBaseManager<CandleStick
         CandleStickChart candleStickChart = new CandleStickChart(reactContext);
         candleStickChart.setOnChartValueSelectedListener(new RNOnChartValueSelectedListener(candleStickChart));
         candleStickChart.setOnChartGestureListener(new RNOnChartGestureListener(candleStickChart));
-        // cheat set setDrawOrder before combinedChart lib default
-        combinedChart.setDrawOrder(
-                new CombinedChart.DrawOrder[]{
-                        CombinedChart.DrawOrder.CANDLE,
-                        CombinedChart.DrawOrder.LINE,
-                }
-        );
         return candleStickChart;
     }
 

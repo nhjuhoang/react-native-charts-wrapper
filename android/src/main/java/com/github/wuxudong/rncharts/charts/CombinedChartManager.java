@@ -44,6 +44,13 @@ public class CombinedChartManager extends BarLineChartBaseManager<CombinedChart,
         combinedChart.setOnChartValueSelectedListener(new RNOnChartValueSelectedListener(combinedChart));
         combinedChart.setOnChartGestureListener(new RNOnChartGestureListener(combinedChart));
         combinedChart.setRenderer(new BFCombinedChartRenderer(combinedChart, combinedChart.getAnimator(), combinedChart.getViewPortHandler()));
+        // cheat set setDrawOrder before combinedChart lib default
+        combinedChart.setDrawOrder(
+                new CombinedChart.DrawOrder[]{
+                        CombinedChart.DrawOrder.CANDLE,
+                        CombinedChart.DrawOrder.LINE,
+                }
+        );
         return combinedChart;
     }
 
