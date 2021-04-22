@@ -22,12 +22,23 @@ import java.util.Map;
  * Helper utilities to convert from Entry to WritableMap
  */
 public final class EntryToWritableMapUtils {
-    public static WritableMap convertEntryToWritableMap(Entry entry) {
+    public static WritableMap convertEntryToWritableMap(Entry entry,
+                                                        RectF contentRect,
+                                                        int measuredWidth) {
         if(entry == null) {
             return null;
         }
 
         WritableMap map = new WritableNativeMap();
+
+        map.putInt("measuredWidth", measuredWidth);
+
+        if(contentRect != null){
+            map.putDouble("contentOffsetLeft",contentRect.left);
+            map.putDouble("contentOffsetRight",contentRect.right);
+            map.putDouble("contentOffsetTop",contentRect.top);
+            map.putDouble("contentOffsetBottom",contentRect.bottom);
+        }
 
         if(entry.getData() instanceof Map) {
             map.putMap("data", convertMapToWritableMap((Map) entry.getData()));

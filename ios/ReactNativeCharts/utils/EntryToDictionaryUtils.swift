@@ -11,8 +11,21 @@ import Charts
 import SwiftyJSON
 
 class EntryToDictionaryUtils: NSObject {
-  static func entryToDictionary(_ entry: ChartDataEntry) -> [AnyHashable: Any]{
+  static func entryToDictionary(_ entry: ChartDataEntry, contentRect: CGRect) -> [AnyHashable: Any]{
     var dict = [AnyHashable: Any]()
+
+    if(!contentRect.isEmpty){
+        let contentWidth: CGFloat = contentRect.width;
+        let contentOffsetLeft: CGFloat = contentRect.minX;
+        let contentOffsetRight: CGFloat = contentRect.maxX;
+        let contentOffsetTop: CGFloat = contentRect.maxY;
+        let contentOffsetBottom: CGFloat = contentRect.minY;
+        dict["contentWidth"] = contentWidth;
+        dict["contentOffsetLeft"] = contentOffsetLeft;
+        dict["contentOffsetRight"] = contentOffsetRight;
+        dict["contentOffsetTop"] = contentOffsetTop;
+        dict["contentOffsetBottom"] = contentOffsetBottom;
+    }
     
     if entry.data != nil {
         dict["data"] = (entry.data as! JSON).dictionaryObject!

@@ -26,12 +26,17 @@ public class RNOnChartValueSelectedListener implements OnChartValueSelectedListe
 
         if (mWeakChart != null) {
             Chart chart = mWeakChart.get();
-
+            RectF contentRect = chart.getContentRect();
+            int measuredWidth = chart.getMeasuredWidth();
             ReactContext reactContext = (ReactContext) chart.getContext();
             reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
                     chart.getId(),
                     "topSelect",
-                    EntryToWritableMapUtils.convertEntryToWritableMap(entry));
+                    EntryToWritableMapUtils.convertEntryToWritableMap(
+                            entry,
+                            contentRect,
+                            measuredWidth
+                    ));
         }
     }
 
@@ -39,7 +44,7 @@ public class RNOnChartValueSelectedListener implements OnChartValueSelectedListe
     public void onNothingSelected() {
         if (mWeakChart != null) {
             Chart chart = mWeakChart.get();
-
+            
             ReactContext reactContext = (ReactContext) chart.getContext();
             reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
                     chart.getId(),

@@ -500,7 +500,8 @@ open class RNChartViewBase: UIView, ChartViewDelegate {
         if self.onSelect == nil {
             return
         } else {
-            self.onSelect!(EntryToDictionaryUtils.entryToDictionary(entry))
+            let contentRect: CGRect = chartView.contentRect;
+            self.onSelect!(EntryToDictionaryUtils.entryToDictionary(entry, contentRect: contentRect))
 
         }
     }
