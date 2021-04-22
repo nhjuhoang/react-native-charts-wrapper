@@ -2,7 +2,6 @@ package com.github.wuxudong.rncharts.listener;
 
 import androidx.annotation.NonNull;
 import android.view.MotionEvent;
-import android.graphics.RectF;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;

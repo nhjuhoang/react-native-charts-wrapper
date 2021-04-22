@@ -1,5 +1,7 @@
 package com.github.wuxudong.rncharts.listener;
 
+import android.graphics.RectF;
+
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.github.mikephil.charting.charts.Chart;
