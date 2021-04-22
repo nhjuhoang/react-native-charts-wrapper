@@ -1,5 +1,7 @@
 package com.github.wuxudong.rncharts.utils;
 
+import android.graphics.RectF;
+
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
