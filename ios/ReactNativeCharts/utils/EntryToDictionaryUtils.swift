@@ -16,11 +16,13 @@ class EntryToDictionaryUtils: NSObject {
 
     if(!contentRect.isEmpty){
         let contentWidth: CGFloat = contentRect.width;
+        let contentHeight: CGFloat = contentRect.height;
         let contentOffsetLeft: CGFloat = contentRect.minX;
         let contentOffsetRight: CGFloat = contentRect.maxX;
         let contentOffsetTop: CGFloat = contentRect.maxY;
         let contentOffsetBottom: CGFloat = contentRect.minY;
         dict["contentWidth"] = contentWidth;
+        dict["contentHeight"] = contentHeight;
         dict["contentOffsetLeft"] = contentOffsetLeft;
         dict["contentOffsetRight"] = contentOffsetRight;
         dict["contentOffsetTop"] = contentOffsetTop;

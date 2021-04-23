@@ -26,7 +26,8 @@ import java.util.Map;
 public final class EntryToWritableMapUtils {
     public static WritableMap convertEntryToWritableMap(Entry entry,
                                                         RectF contentRect,
-                                                        int measuredWidth) {
+                                                        int measuredWidth,
+                                                        int measuredHeight) {
         if(entry == null) {
             return null;
         }
@@ -34,6 +35,7 @@ public final class EntryToWritableMapUtils {
         WritableMap map = new WritableNativeMap();
 
         map.putInt("measuredWidth", measuredWidth);
+        map.putInt("measuredHeight", measuredHeight);
 
         if(contentRect != null){
             map.putDouble("contentOffsetLeft",contentRect.left);

@@ -30,6 +30,7 @@ public class RNOnChartValueSelectedListener implements OnChartValueSelectedListe
             Chart chart = mWeakChart.get();
             RectF contentRect = chart.getContentRect();
             int measuredWidth = chart.getMeasuredWidth();
+            int measuredHeight = chart.getMeasuredHeight();
             ReactContext reactContext = (ReactContext) chart.getContext();
             reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
                     chart.getId(),
@@ -37,7 +38,8 @@ public class RNOnChartValueSelectedListener implements OnChartValueSelectedListe
                     EntryToWritableMapUtils.convertEntryToWritableMap(
                             entry,
                             contentRect,
-                            measuredWidth
+                            measuredWidth,
+                            measuredHeight
                     ));
         }
     }
