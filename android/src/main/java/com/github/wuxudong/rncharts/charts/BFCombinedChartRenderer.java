@@ -70,6 +70,8 @@ public class BFCombinedChartRenderer extends CombinedChartRenderer {
 
         Chart chart = mChart.get();
         if (chart == null) return;
+        // không vẽ line
+        return;
 
         for (DataRenderer renderer : mRenderers) {
             ChartData data = null;

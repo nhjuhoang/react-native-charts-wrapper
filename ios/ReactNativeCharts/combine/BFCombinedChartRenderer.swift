@@ -129,6 +129,9 @@ class BFCombinedChartRenderer: CombinedChartRenderer {
                 else { return }
 
             context.saveGState()
+            // không vẽ line 
+            context.restoreGState()
+            return
 
             for high in indices
             {
@@ -190,6 +193,9 @@ class BFCombinedChartRenderer: CombinedChartRenderer {
             let chartXMax = dataProvider.chartXMax
 
             context.saveGState()
+            // không vẽ line 
+            context.restoreGState()
+            return
 
             for high in indices
             {
