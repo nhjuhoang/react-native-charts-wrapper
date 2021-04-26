@@ -73,32 +73,32 @@ public class BFCombinedChartRenderer extends CombinedChartRenderer {
         // không vẽ line
         return;
 
-        for (DataRenderer renderer : mRenderers) {
-            ChartData data = null;
+        // for (DataRenderer renderer : mRenderers) {
+        //     ChartData data = null;
 
-            if (renderer instanceof BFBarChartRenderer)
-                data = ((BFBarChartRenderer)renderer).getChartDataProvider().getBarData();
-            else if (renderer instanceof BFLineChartRenderer)
-                data = ((BFLineChartRenderer)renderer).getChartDataProvider().getLineData();
-            else if (renderer instanceof BFCandleStickChartRenderer)
-                data = ((BFCandleStickChartRenderer)renderer).getChartDataProvider().getCandleData();
-            else if (renderer instanceof BFScatterChartRenderer)
-                data = ((BFScatterChartRenderer)renderer).getChartDataProvider().getScatterData();
-            else if (renderer instanceof BFBubbleChartRenderer)
-                data = ((BFBubbleChartRenderer)renderer).getChartDataProvider().getBubbleData();
+        //     if (renderer instanceof BFBarChartRenderer)
+        //         data = ((BFBarChartRenderer)renderer).getChartDataProvider().getBarData();
+        //     else if (renderer instanceof BFLineChartRenderer)
+        //         data = ((BFLineChartRenderer)renderer).getChartDataProvider().getLineData();
+        //     else if (renderer instanceof BFCandleStickChartRenderer)
+        //         data = ((BFCandleStickChartRenderer)renderer).getChartDataProvider().getCandleData();
+        //     else if (renderer instanceof BFScatterChartRenderer)
+        //         data = ((BFScatterChartRenderer)renderer).getChartDataProvider().getScatterData();
+        //     else if (renderer instanceof BFBubbleChartRenderer)
+        //         data = ((BFBubbleChartRenderer)renderer).getChartDataProvider().getBubbleData();
 
-            int dataIndex = data == null ? -1
-                    : ((CombinedData)chart.getData()).getAllData().indexOf(data);
+        //     int dataIndex = data == null ? -1
+        //             : ((CombinedData)chart.getData()).getAllData().indexOf(data);
 
-            mHighlightBuffer.clear();
+        //     mHighlightBuffer.clear();
 
-            for (Highlight h : indices) {
-                if (h.getDataIndex() == dataIndex || h.getDataIndex() == -1)
-                    mHighlightBuffer.add(h);
-            }
+        //     for (Highlight h : indices) {
+        //         if (h.getDataIndex() == dataIndex || h.getDataIndex() == -1)
+        //             mHighlightBuffer.add(h);
+        //     }
 
-            renderer.drawHighlighted(c, mHighlightBuffer.toArray(new Highlight[mHighlightBuffer.size()]));
-        }
+        //     renderer.drawHighlighted(c, mHighlightBuffer.toArray(new Highlight[mHighlightBuffer.size()]));
+        // }
     }
 
     static class BFCandleStickChartRenderer extends CandleStickChartRenderer {
